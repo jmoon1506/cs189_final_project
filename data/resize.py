@@ -21,7 +21,7 @@ def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=Fals
               flipping the provided images
         color_invert: whether or not to invert B&W values
     """
-    root_dir = "data/png{}/".format("" if res is None else res)
+    root_dir = "png{}/".format("" if res is None else res)
     
     num_train = 96 if flip else 48
     num_val = 16
@@ -92,8 +92,8 @@ def load_image(path):
     return im_data
 
 def resize_images(res=128):
-    root_dir = "data/png/"
-    new_dir = "data/png{}/".format(res)
+    root_dir = "png/"
+    new_dir = "png{}/".format(res)
     try:
         os.mkdir(new_dir, 755)
     except:
@@ -125,4 +125,4 @@ def resize_images(res=128):
 
             imsave(new_im_path, dilated)
 
-# resize_images(res=128)
+resize_images(res=128)
