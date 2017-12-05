@@ -1,0 +1,3 @@
+data/*
+!data/get_data.sh
+*.pyc
