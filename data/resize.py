@@ -8,6 +8,7 @@ from skimage.util import img_as_ubyte
 from skimage import io
 from skimage.morphology import dilation
 from skimage.morphology import disk
+from skimage.filters import threshold_mean
 
 def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=False):
     """
@@ -43,8 +44,6 @@ def get_data(num_classes=250, res=128, flip=True, color_invert=True, center=Fals
     val_index = 0
     test_index = 0
 
-    selem = disk(1)
-    
     for node in sorted(os.listdir(root_dir)):
         if os.path.isfile(root_dir + node):
             continue
@@ -120,9 +119,12 @@ def resize_images(res=128):
             im_data = imread(im_path, mode='L')
             im_data = imresize(im_data, (res,res))
             im_data = -1 * im_data + 255
-            selem = disk(2)
+            selem = disk(1)
             dilated = dilation(im_data, selem)
 
-            imsave(new_im_path, dilated)
+            thresh = threshold_mean(dilated)
+            binary = dilated > thresh
+
+            imsave(new_im_path, binary)
 
 resize_images(res=128)
