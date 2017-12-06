@@ -4,7 +4,7 @@ import input_data
 import matplotlib.pyplot as plt
 import os
 from scipy.misc import imsave as ims
-from skimage.morphology import skeletonize
+from skimage.morphology import erosion
 from utils import *
 from ops import *
 
@@ -63,6 +63,7 @@ class LatentAttention():
         reshaped_vis = visualization.reshape(self.batchsize,128,128)
         ims("results/base.jpg",merge(reshaped_vis[:64],[8,8]))
         # train
+        selem = disk(2)
         saver = tf.train.Saver(max_to_keep=2)
         with tf.Session() as sess:
             sess.run(tf.initialize_all_variables())
@@ -80,7 +81,7 @@ class LatentAttention():
 
                         generated_test = generated_test.reshape(self.batchsize,128,128)
                         for i in range(16):
-                        	ims("results/"+str(epoch)+"_"+str(i)+".jpg",skeletonize(generated_test[i]))
+                        	ims("results/"+str(epoch)+"_"+str(i)+".jpg",erosion(generated_test[i], selem))
 
 
 model = LatentAttention()
