@@ -75,11 +75,12 @@ class LatentAttention():
                         print "epoch %d: genloss %f latloss %f" % (epoch, np.mean(gen_loss), np.mean(lat_loss))
                         saver.save(sess, os.getcwd()+"/training/train",global_step=epoch)
                         generated_test = sess.run(self.generated_images, feed_dict={self.images: visualization})
-                        for i in range(len(generated_test)):
-                        	generated_test[i][:,:,0] = skeletonize(generated_test[i][:,:,0])
+                        # for i in range(len(generated_test)):
+                        	# generated_test[i][:,:,0] = skeletonize(generated_test[i][:,:,0])
 
                         generated_test = generated_test.reshape(self.batchsize,128,128)
-                        ims("results/"+str(epoch)+".jpg",merge(generated_test[:64],[8,8]))
+                        for i in range(16):
+                        	ims("results/"+str(epoch)+"_"+str(i)+".jpg",generated_test[i])
 
 
 model = LatentAttention()
