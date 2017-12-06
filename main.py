@@ -4,6 +4,7 @@ import input_data
 import matplotlib.pyplot as plt
 import os
 from scipy.misc import imsave as ims
+from skimage.morphology import skeletonize
 from utils import *
 from ops import *
 
@@ -65,7 +66,7 @@ class LatentAttention():
         saver = tf.train.Saver(max_to_keep=2)
         with tf.Session() as sess:
             sess.run(tf.initialize_all_variables())
-            for epoch in range(200):
+            for epoch in range(10):
                 for idx in range(int(self.n_samples / self.batchsize)):
                     batch = self.mnist.train.next_batch(self.batchsize)[0]
                     _, gen_loss, lat_loss = sess.run((self.optimizer, self.generation_loss, self.latent_loss), feed_dict={self.images: batch})
@@ -74,6 +75,9 @@ class LatentAttention():
                         print "epoch %d: genloss %f latloss %f" % (epoch, np.mean(gen_loss), np.mean(lat_loss))
                         saver.save(sess, os.getcwd()+"/training/train",global_step=epoch)
                         generated_test = sess.run(self.generated_images, feed_dict={self.images: visualization})
+                        for i in range(len(generated_test)):
+                        	generated_test[i][:,:,0] = skeletonize(generated_test[i][:,:,0])
+
                         generated_test = generated_test.reshape(self.batchsize,128,128)
                         ims("results/"+str(epoch)+".jpg",merge(generated_test[:64],[8,8]))
 
