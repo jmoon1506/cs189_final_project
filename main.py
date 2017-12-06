@@ -80,7 +80,7 @@ class LatentAttention():
 
                         generated_test = generated_test.reshape(self.batchsize,128,128)
                         for i in range(16):
-                        	ims("results/"+str(epoch)+"_"+str(i)+".jpg",generated_test[i])
+                        	ims("results/"+str(epoch)+"_"+str(i)+".jpg",skeletonize(generated_test[i]))
 
 
 model = LatentAttention()
