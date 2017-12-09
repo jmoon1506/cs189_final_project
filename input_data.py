@@ -175,7 +175,7 @@ def get_data(num_classes=250 , res=128, flip=True, color_invert=False, center=Fa
               flipping the provided images
         color_invert: whether or not to invert B&W values
     """
-    root_dir = "data/png{}/".format("" if res is None else res)
+    root_dir = "data/processed_png{}/".format("" if res is None else res)
 
     num_train = 96 if flip else 48
     num_val = 16
@@ -196,14 +196,14 @@ def get_data(num_classes=250 , res=128, flip=True, color_invert=False, center=Fa
     train_index = 0
     val_index = 0
     test_index = 0
-
     for node in sorted(os.listdir(root_dir)):
         if os.path.isfile(root_dir + node):
             continue
+         #if node != "cat" and node != "truck" and node != "bee" and node != "dog" and node != "hat" and node != "horse" and node != "hand" and node != "pizza" and node != "donut":
+          # continue
 
         labels.append(node)
         label_path = root_dir + node + "/"
-
         num_images = 0
         for im_file in sorted(os.listdir(label_path)):
             im_data = load_image(label_path + im_file).reshape(res, res, 1)

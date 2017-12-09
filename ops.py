@@ -36,23 +36,37 @@ class batch_norm(object):
         return normed
 
 # standard convolution layer
-def conv2d(x, inputFeatures, outputFeatures, name, k_w=10, k_h=10):
+def conv2d(x, inputFeatures, outputFeatures, name):
     with tf.variable_scope(name):
-        w = tf.get_variable("w",[k_w, k_h,inputFeatures, outputFeatures], initializer=tf.truncated_normal_initializer(stddev=0.02))
+        w = tf.get_variable("w",[10,10,inputFeatures, outputFeatures], initializer=tf.truncated_normal_initializer(stddev=0.02))
         b = tf.get_variable("b",[outputFeatures], initializer=tf.constant_initializer(0.0))
         conv = tf.nn.conv2d(x, w, strides=[1,2,2,1], padding="SAME") + b
         return conv
 
-def conv_transpose(x, outputShape, name, k_w=10, k_h=10):
+def conv2d_no_stride(x, inputFeatures, outputFeatures, name):
+    with tf.variable_scope(name):
+        w = tf.get_variable("w",[5,5,inputFeatures, outputFeatures], initializer=tf.truncated_normal_initializer(stddev=0.02))
+        b = tf.get_variable("b",[outputFeatures], initializer=tf.constant_initializer(0.0))
+        conv = tf.nn.conv2d(x, w, strides=[1,1,1,1], padding="SAME") + b
+        return conv
+
+def conv_transpose(x, outputShape, name):
     with tf.variable_scope(name):
         # h, w, out, in
-        w = tf.get_variable("w",[k_w, k_h, outputShape[-1], x.get_shape()[-1]], initializer=tf.truncated_normal_initializer(stddev=0.02))
+        w = tf.get_variable("w",[10,10, outputShape[-1], x.get_shape()[-1]], initializer=tf.truncated_normal_initializer(stddev=0.02))
         b = tf.get_variable("b",[outputShape[-1]], initializer=tf.constant_initializer(0.0))
         convt = tf.nn.conv2d_transpose(x, w, output_shape=outputShape, strides=[1,2,2,1])
         return convt
+def conv_transpose_no_stride(x, outputShape, name):
+    with tf.variable_scope(name):
+        # h, w, out, in
+        w = tf.get_variable("w",[5,5, outputShape[-1], x.get_shape()[-1]], initializer=tf.truncated_normal_initializer(stddev=0.02))
+        b = tf.get_variable("b",[outputShape[-1]], initializer=tf.constant_initializer(0.0))
+        convt = tf.nn.conv2d_transpose(x, w, output_shape=outputShape, strides=[1,1,1,1])
+        return convt
 
 def deconv2d(input_, output_shape,
-             k_h=5, k_w=5, d_h=2, d_w=2, stddev=0.02,
+             k_h=10, k_w=10, d_h=2, d_w=2, stddev=0.02,
              name="deconv2d"):
     with tf.variable_scope(name):
         # filter : [height, width, output_channels, in_channels]
