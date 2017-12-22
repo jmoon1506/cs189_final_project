@@ -13,6 +13,8 @@ class LatentAttention():
         self.mnist = input_data.read_data_set_custom()
         self.n_samples = self.mnist.train.num_examples
 
+        self.trials = 5
+        self.epoch = 30
         self.n_z = 200
         self.batchsize = 100
 
@@ -57,10 +59,10 @@ class LatentAttention():
         return h4
 
     def train(self):
-        for i in range(5):
+        for i in range(self.trials):
             visualization = self.mnist.test.next_batch(self.batchsize)[0]
             reshaped_vis = visualization.reshape(self.batchsize,128,128)
-            base_dir = "all_classes_reconstruction_400_3_layers"+str(i)+ "/"
+            base_dir = "reconstruction_"+str(i)+ "/"
             if not os.path.exists(base_dir):
                 os.makedirs(base_dir)
             ims(base_dir+"base.jpg",merge(reshaped_vis[:64],[8,8]))
@@ -70,7 +72,7 @@ class LatentAttention():
                 generation_loss = []
                 latent_loss = []
                 sess.run(tf.initialize_all_variables())
-                for epoch in range(30):
+                for epoch in range(self.epoch):
                     for idx in range(int(self.n_samples / self.batchsize)):
                         batch = self.mnist.train.next_batch(self.batchsize)[0]
                         _, gen_loss, lat_loss = sess.run((self.optimizer, self.generation_loss, self.latent_loss), feed_dict={self.images: batch})
@@ -83,31 +85,14 @@ class LatentAttention():
                             generated_test = sess.run(self.generated_images, feed_dict={self.images: visualization})
                             generated_test = generated_test.reshape(self.batchsize,128,128)
                             ims(base_dir+str(epoch)+".jpg",merge(generated_test[:64],[8,8]))
-                gen_loss_file = open('gen_loss_0001_10x10_2layers.txt_'+str(self.n_z)+'latent.txt', 'w')
-                lat_loss_file = open('lat_loss_0001_10x10_2layers.txt_'+str(self.n_z)+'latent.txt', 'w')
+                gen_loss_file = open('gen_loss_'+str(self.n_z)+'_latent.txt', 'w')
+                lat_loss_file = open('lat_loss_'+str(self.n_z)+'_latent.txt', 'w')
 
                 for item in generation_loss:
                     gen_loss_file.write("%s\n" % item)
                 for item in latent_loss:
                     lat_loss_file.write("%s\n" % item)
-
-                # nx=ny=20
-                # x_values = np.linspace(-3, 3, nx)
-                # y_values = np.linspace(-3,3, ny)
-
-                # canvas = np.empty((128*nx, 128*ny))
-                # z_mu = np.random.randn(self.batchsize, self.n_z)
-		# generated_test = sess.run(self.generated_images, feed_dict={self.guessed_z: z_mu})
-		# generated_test = generated_test.reshape(self.batchsize,128,128)
-		# ims("./sample_one/test.jpg",merge(generated_test[:100],[10,10]))
-
-                # for i in range(100):
-                #     z_mu = np.random.randn(self.batchsize, self.n_z)
-                #     generated_test = sess.run(self.generated_images, feed_dict={self.guessed_z: z_mu})
-                #     generated_test = generated_test.reshape(self.batchsize,128,128)
-                #     ims("./3_classes_sample/sample_"+str(i)+".jpg",merge(generated_test[:25],[5,5]))
-                
-            return
+        return
         
 model = LatentAttention()
 model.train()
